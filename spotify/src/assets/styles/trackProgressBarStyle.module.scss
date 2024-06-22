@@ -1,0 +1,17 @@
+.progressWrapper{
+    height: 5px;
+    width: 100%;
+    border: 1px white solid;
+    border-radius: 10px;
+    &:hover{
+      cursor: pointer;
+    }
+    .progressBar {
+        height: 5px;
+        width: 1px;
+        max-width: 100%;
+        border-right: 1px white solid;
+        border-radius: 10px;
+        transform-origin: center left;
+    }
+}

@@ -1,0 +1,34 @@
+$black-color: #121212;
+$dark-grey-color: #242424;
+.backgroundColor{
+    height: 100%;
+    background-color: $black-color;
+.browseSubcategoriesContainer{
+    color: white;
+    padding: 10px;
+    background-color: $black-color;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    .wrapper{
+        width: calc(100% - 20px);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 16px;
+        grid-template-rows: auto;
+        .header{
+            grid-column: span 4;
+        }
+        .imageContainer{
+            img{
+                width: 100%;
+                border-radius: 10px;
+                object-fit: cover;
+            }
+            &:hover{
+                cursor: pointer;
+            }
+        }
+    }
+}
+}

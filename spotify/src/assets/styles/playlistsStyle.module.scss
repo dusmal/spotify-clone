@@ -1,0 +1,57 @@
+
+$primary-color: #fd7012;
+$black-color: #121212;
+$hover-black-color: #1a1a1a;
+$grey-text: #9A9A9A;
+$white-color: #fff;
+
+.playlistsContainer{
+  height:100%;
+  overflow: scroll;
+}
+.ul {
+  color: $white-color;
+  list-style-type: none;
+  background-color: $black-color;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  
+    .li {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+    border-radius:10px ;
+    &:hover {
+      background-color: $hover-black-color;
+      cursor: pointer;
+    }
+    .playlistName {
+      font-weight: bold;
+      color: white;
+      overflow: hidden;
+      max-height: 30px;
+    }
+    p {
+      color: $grey-text;
+      font-size:13px;
+    }
+  }
+  img {
+    border-radius: 5px;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+  }
+  div p {
+    margin: 0;
+  }
+}
+.playlistsContainer::-webkit-scrollbar, .ul::-webkit-scrollbar {
+  display: none;
+}

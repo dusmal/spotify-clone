@@ -1,0 +1,35 @@
+$grey: #2A2929;
+.albumsWrapper{
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 0.5em;
+    padding: 1em;
+    h4{
+        width: 100%;
+        text-align: center;
+        padding-bottom: 1em;
+    }
+    .album{
+        max-width: 200px;
+        border-radius: 10px;
+        div{
+            padding:10px;
+            img{
+                width: 100%;
+                border-radius: 10px;
+            }
+            p{
+                max-height: 20px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space:nowrap;
+            }
+        }
+        &:hover{
+            background-color: $grey;
+            cursor: pointer;
+        }
+    }
+}

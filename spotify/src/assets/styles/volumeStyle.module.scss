@@ -1,0 +1,71 @@
+$grey-color: #A7A7A7;
+.volumeContainer{
+    display: flex;
+    justify-content: flex-end;
+    width: 25%;
+    gap: 10px;
+    .volumeIcon{
+        width: 10%;
+    }
+    .volumeIcon:hover{
+        cursor: pointer;
+        color: white;
+    }
+    [id="volumeSlider"]{
+        height: 1px;
+        padding-top: 5px;
+        width: 50%;
+       
+    }
+    [id="volumeSlider"]:hover{
+       cursor: pointer;
+    }
+    input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+      }
+      input[type="range"]:focus {
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        background-color: $grey-color;
+        border-radius: 0.5rem;
+        height: 1px;
+      }
+      
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none; 
+        appearance: none;
+        margin-top: -4.5px; 
+        background-color: #ffffff;
+        border-radius: 0.5rem;
+        height: 10px;
+        width: 10px;
+      }
+      
+      input[type="range"]:focus::-webkit-slider-thumb {
+        outline: 3px solid #ffffff;
+        outline-offset: 0.125rem;
+      }
+      
+      input[type="range"]::-moz-range-track {
+        background-color: $grey-color;
+        border-radius: 0.5rem;
+        height: 1px;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        background-color: #ffffff;
+        border: none; 
+        border-radius: 0.5rem;
+        height: 10px;
+        width: 10px;
+      }
+      
+      input[type="range"]:focus::-moz-range-thumb{
+        outline: 3px solid #ffffff;
+        outline-offset: 0.125rem;
+      }
+}

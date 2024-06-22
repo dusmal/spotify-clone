@@ -1,0 +1,47 @@
+$black-color: #121212;
+$dark-grey-color: #242424;
+
+.browseCategoriesContainer{
+    background-color: $black-color;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    .wrapper{
+        width: calc(100% - 20px);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 16px;
+        grid-template-rows: auto;
+        .header{
+            grid-column: span 4;
+        }
+        .imageContainer{
+            position: relative;
+            img{
+                width: 100%;
+                border-radius: 10px;
+                object-fit: cover;
+            }
+            div{
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                top: 80%;
+            }
+            &:hover{
+                cursor: pointer;
+                p{
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+   
+}
+
+.wrapper:-webkit-scrollbar, .wrapper::-webkit-scrollbar {
+    display: none;
+  }

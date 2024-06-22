@@ -1,0 +1,60 @@
+$dark-grey-color: #282828;
+$light-grey-color: #ADADAD;
+$hover-grey: #1a1a1a;
+
+.addToPlaylistsContainer{
+    background-color: $dark-grey-color;
+    color: $light-grey-color;
+    padding: 1em;
+    h4{
+        border-bottom: 1px $light-grey-color solid;
+        padding: 0 0 0.5em;
+    }
+    ul{
+        width: 250px;
+        list-style-type: none; 
+        font-size: 15px;
+        padding: 0.5em 0; 
+        margin: 0; 
+        max-height: 350px;
+        overflow-y: scroll;
+        border-bottom: 1px $light-grey-color solid;
+        li{
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5em 0.5em;
+            span{
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis; 
+            }
+            &:hover{
+                background-color: $hover-grey;
+                color: white;
+            }
+        }
+    }
+    .buttonsContainer{
+        display: flex;
+        justify-content: flex-end;
+        .buttonCancel{
+            padding: 0.5em;
+            border-radius: 10px;
+            margin-top: 10px;
+            &:hover{
+                color: white;
+            }
+        }
+        .button{
+            background-color: white;
+            color: $hover-grey;
+            padding: 0.5em;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    }
+}
+
+ul::-webkit-scrollbar, ul::-webkit-scrollbar {
+    display: none;
+}

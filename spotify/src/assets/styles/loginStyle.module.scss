@@ -1,0 +1,18 @@
+$black-color: #121212;
+$dark-grey-color: #242424;
+.loginWrapper{
+    background-color: $black-color;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    button{
+        background-color: #dbdbdb;
+        padding: 10px;
+        border-radius: 10px;
+        &:hover{
+            cursor: pointer;
+            background-color: white;
+        }
+    }
+}

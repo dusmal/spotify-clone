@@ -1,0 +1,36 @@
+$black-color: #121212;
+$grey-color: #A7A7A7;
+.sidePlayerContainer{
+    background-color: $black-color;
+    border-radius: 10px;
+    color: white;
+    padding:1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .artists{
+        margin: 0.5em 0;
+        color: $grey-color;
+    }
+    .contextDescription:hover, .trackName:hover, .artistName:hover{
+        cursor: pointer;
+        text-decoration: underline;
+    }
+    .playerImage{
+        border-radius: 10px;
+        margin: 0.5em 0;
+        width: 100%;
+    }
+    .buttonsContainer{
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    .button{
+        color: $grey-color;
+    }
+    .button:hover{
+        cursor: pointer;
+        color: white;
+    }
+}

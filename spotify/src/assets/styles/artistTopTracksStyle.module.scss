@@ -1,0 +1,44 @@
+.artistTopTracksContainer{
+    ul{
+        list-style-type: none;
+        color: white;
+        li{
+            display: grid;
+            justify-items: end;
+            grid-template-columns: 10px 70px 1fr 1fr;
+            margin: 0.5em 2em;
+            align-items: center;
+            column-gap: 20px;
+            padding: 0 20px;
+            border-radius: 10px;
+            &:hover{
+                background-color: #2A2929;
+            }
+            .playTrack{
+                &:hover{
+                    cursor: pointer;
+                }
+            }
+        }
+        .columnStyle{
+            justify-self: start;
+            .artistSpan:hover{
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            &:hover{
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        }
+        .active{
+            background-color: #5A5959 !important;
+        }
+    }
+    .artistTopTracksHeader{
+        margin: 1em 2em;
+        h2{
+            color: white;
+        }
+    }
+}

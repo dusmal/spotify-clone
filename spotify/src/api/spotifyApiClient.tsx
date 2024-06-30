@@ -34,10 +34,10 @@ spotifyClient.interceptors.response.use(
           console.log('ERROR ', err);
         }
       }
-      if(err.response.status === 429){
+      if (err.response.status === 429) {
         alert('TOO MANY REQUESTS!');
         await new Promise(resolve => setTimeout(resolve, 30000));
-        return spotifyClient(originalConfig); 
+        return spotifyClient(originalConfig);
       }
     }
     return Promise.reject(err);
@@ -96,7 +96,7 @@ export async function getSeveralCategories() {
   return response;
 }
 
-export async function getCategoryPlaylist(id:string){
+export async function getCategoryPlaylist(id: string) {
   let response = await spotifyClient
     .get(`/browse/categories/${id}/playlists`)
     .then((resp) => {
@@ -120,7 +120,7 @@ export async function fetchPlaylist(playlistId: string) {
     .then((resp) => {
       return resp.data;
     });
-    response.tracks.items = response.tracks.items.filter((el:any)=>el.track!==null);
+  response.tracks.items = response.tracks.items.filter((el: any) => el.track !== null);
   return response;
 }
 //from playlist
@@ -133,10 +133,10 @@ export async function fetchTracks(offset: string) {
   return response;
 }
 //fetch all tracks from all playlists 
-export async function fetchAllTracksFromPlaylist(playlistId: string){
+export async function fetchAllTracksFromPlaylist(playlistId: string) {
   let allTracks: any[] = [];
   let offset = 0;
-  const limit = 100; 
+  const limit = 100;
   let response;
   do {
     response = await spotifyClient.get(`/playlists/${playlistId}/tracks`, {
@@ -145,43 +145,51 @@ export async function fetchAllTracksFromPlaylist(playlistId: string){
 
     allTracks = allTracks.concat(response.data.items);
     offset += limit;
-  } while (response.data.next); 
+  } while (response.data.next);
   return allTracks;
 }
 
+export async function fetchNextTracksFromToken(nextToken: string) {
+  const offset = nextToken.replace('https://api.spotify.com/v1/playlists/', '');
+  const nextTracks = await fetchTracks(offset);
+  return nextTracks;
+};
+
 //add track to playlist
-export async function addItemsToPlaylist(playlistId:string, trackId:string){
+export async function addItemsToPlaylist(playlistId: string, trackId: string) {
   const body = {
     "uris": [
       `spotify:track:${trackId}`
     ],
     "position": 0
-}
+  }
   let response = await spotifyClient
-  .post(`/playlists/${playlistId}/tracks`, body)
-  .then((resp) => {
-    return resp.data;
-  });
-  console.log('add track to playlost, ',response);
+    .post(`/playlists/${playlistId}/tracks`, body)
+    .then((resp) => {
+      return resp.data;
+    });
+  console.log('add track to playlost, ', response);
   return response;
 }
 
 //remove track drom playlist
-export async function removePlaylistItems(playlistId:string, trackId:string){
+export async function removePlaylistItems(playlistId: string, trackId: string) {
   let response = await spotifyClient
-  .delete(`/playlists/${playlistId}/tracks`, {
-    data: {"tracks": [
-      {"uri":`spotify:track:${trackId}`}
-    ]}
-  })
-  .then((resp) => {
-    return resp.data;
-  });
+    .delete(`/playlists/${playlistId}/tracks`, {
+      data: {
+        "tracks": [
+          { "uri": `spotify:track:${trackId}` }
+        ]
+      }
+    })
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
 //liked songs
-export async function getSavedTracks(offset: string, limit:string) {
+export async function getSavedTracks(offset: string, limit: string) {
   let response = await spotifyClient
     .get(`/me/tracks?offset=${offset}&limit=${limit}`)
     .then((resp) => {
@@ -190,7 +198,7 @@ export async function getSavedTracks(offset: string, limit:string) {
   return response;
 }
 //check liked songs
-export async function checkSavedTracks(id:string) {
+export async function checkSavedTracks(id: string) {
   let response = await spotifyClient
     .get(`/me/tracks/contains?ids=${id}`)
     .then((resp) => {
@@ -199,7 +207,7 @@ export async function checkSavedTracks(id:string) {
   return response;
 }
 //like song
-export async function saveTrack(id:string) {
+export async function saveTrack(id: string) {
   let response = await spotifyClient
     .put(`/me/tracks/?ids=${id}`)
     .then((resp) => {
@@ -209,14 +217,14 @@ export async function saveTrack(id:string) {
 }
 //dislike song
 
-export async function removeSavedTrack(trackId:string){
+export async function removeSavedTrack(trackId: string) {
   let response = await spotifyClient
-  .delete(`/me/tracks`, {
-    data: {"ids": [`${trackId}`]}
-  })
-  .then((resp) => {
-    return resp.data;
-  });
+    .delete(`/me/tracks`, {
+      data: { "ids": [`${trackId}`] }
+    })
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
@@ -268,125 +276,125 @@ export async function getAlbum(albumId: string) {
 
 export async function getTrack(trackId: string) {
   let response = await spotifyClient
-  .get(`/tracks/${trackId}`)
-  .then((resp) => {
-    return resp.data;
-  });
-return response;
+    .get(`/tracks/${trackId}`)
+    .then((resp) => {
+      return resp.data;
+    });
+  return response;
 }
 
-export async function getTrackRecommendation(trackId: string, artistId:string) {
+export async function getTrackRecommendation(trackId: string, artistId: string) {
   let response = await spotifyClient
-  .get(`/recommendations?seed_tracks=${trackId}&seed_artists=${artistId}`)
-  .then((resp) => {
-    return resp.data.tracks;
-  });
-return response;
+    .get(`/recommendations?seed_tracks=${trackId}&seed_artists=${artistId}`)
+    .then((resp) => {
+      return resp.data.tracks;
+    });
+  return response;
 }
 
-export async function playAlbum(albumId:string){
+export async function playAlbum(albumId: string) {
   const body = {
     "context_uri": `spotify:album:${albumId}`,
     "offset": {
-        "position": 1
+      "position": 1
     },
     "position_ms": 0
-}
+  }
   let response = await spotifyClient
-  .put(`/me/player/play`, body)
-  .then((resp) => {
-    return resp.data;
-  });
+    .put(`/me/player/play`, body)
+    .then((resp) => {
+      return resp.data;
+    });
   console.log(response);
   return response;
 }
 
-export async function playTracks(trackIds: string[], position=5,deviceId:string){
+export async function playTracks(trackIds: string[], position = 5, deviceId: string) {
   const body = {
     "uris": trackIds,
-    "offset": {"position": position}
+    "offset": { "position": position }
 
   }
   let response = await spotifyClient
-  .put(`/me/player/play?device_id=${deviceId}`, body)
-  .then((resp) => {
-    return resp.data;
-  });
+    .put(`/me/player/play?device_id=${deviceId}`, body)
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
-export async function playTrackWithoutContext(trackId: string, deviceId:string){
+export async function playTrackWithoutContext(trackId: string, deviceId: string) {
   const body = {
     "uris": [`spotify:track:${trackId}`],
   }
   let response = await spotifyClient
-  .put(`/me/player/play?device_id=${deviceId}`, body)
-  .then((resp) => {
-    return resp.data;
-  });
+    .put(`/me/player/play?device_id=${deviceId}`, body)
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
-export async function playTrack(contextUri:string, position:number, deviceId:string){
+export async function playTrack(contextUri: string, position: number, deviceId: string) {
   const body = {
     "context_uri": `${contextUri}`,
-    "offset": {"position": position}
+    "offset": { "position": position }
   }
   let response = await spotifyClient
-  .put(`/me/player/play?device_id=${deviceId}`, body)
-  .then((resp) => {
-    return resp.data;
-  });
+    .put(`/me/player/play?device_id=${deviceId}`, body)
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
-export async function pausePlayback(deviceId:string){
+export async function pausePlayback(deviceId: string) {
 
-  if(deviceId){
-  let response = await spotifyClient
-  .put(`/me/player/pause?device_id=${deviceId}`)
-  .then((resp) => {
-    return resp.data;
-  });
-  return response;
+  if (deviceId) {
+    let response = await spotifyClient
+      .put(`/me/player/pause?device_id=${deviceId}`)
+      .then((resp) => {
+        return resp.data;
+      });
+    return response;
   }
 }
 
 
-export async function changeVolumne(deviceId:string, value: string){
-  if(deviceId){
-  let response = await spotifyClient
-  .put(`/me/player/volume?volume_percent=${value}&device_id=${deviceId}`)
-  .then((resp) => {
-    return resp.data;
-  });
-  return response;
+export async function changeVolumne(deviceId: string, value: string) {
+  if (deviceId) {
+    let response = await spotifyClient
+      .put(`/me/player/volume?volume_percent=${value}&device_id=${deviceId}`)
+      .then((resp) => {
+        return resp.data;
+      });
+    return response;
   }
 }
 
-export async function transferPlayback(deviceId: string){
+export async function transferPlayback(deviceId: string) {
   console.log('device_id transfer playback', deviceId);
   const body = {
     "device_ids": [
-        deviceId
+      deviceId
     ]
   }
   let response = await spotifyClient
-  .put(`/me/player`, body)
-  .then((resp) => {
-    return resp.data;
-  });
+    .put(`/me/player`, body)
+    .then((resp) => {
+      return resp.data;
+    });
   return response;
 }
 
-export async function search(term:string){
+export async function search(term: string) {
   if (term !== '') {
     try {
       const response = await spotifyClient.get(`/search?q=${term}&type=artist,album,track,playlist`);
       return response.data;
     } catch (error) {
       console.error('Error searching:', error);
-      throw error; 
+      throw error;
     }
   }
 }

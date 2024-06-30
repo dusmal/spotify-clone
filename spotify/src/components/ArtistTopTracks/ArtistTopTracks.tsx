@@ -1,33 +1,31 @@
 import React from 'react';
 import { playTracks } from '../../api/spotifyApiClient';
 import { ISpotifyTopTracks} from '../../types/types';
-import {convertMs} from '../../helpers/sharedFunctions';
+import {formatMillisecondsToTime} from '../../helpers/utils';
 import TrackButton from '../TrackButton/TrackButton';
-import style from '../../assets/styles/artistTopTracksStyle.module.scss';
+import style from '../../assets/styles/ArtistTopTracksStyle.module.scss';
+import { getTrackImage } from '../../helpers/spotifyUtils';
 
 type Props = {
     id: string;
     topTracks: ISpotifyTopTracks[];
     tracksUris: string[];
     player:any;
-    isPlayerPaused: boolean;
-    currentPlayerTrack: string;
-    deviceId: string;
-    playerContext: any;
     setPlayToggle: React.Dispatch<React.SetStateAction<boolean | null>>;
     onTrackSelect: (albumId: string) => void;
   };
 
-const ArtistTopTracks = ({id, setPlayToggle, onTrackSelect, topTracks,tracksUris, player, isPlayerPaused, currentPlayerTrack, deviceId, playerContext}:Props) => {
-  
-    const handleTogglePlay = (trackNumber:string, trackId:any, contextId: string) => {
+const ArtistTopTracks = ({id, setPlayToggle, onTrackSelect, topTracks,tracksUris, player}:Props) => {
+  const {playerInstance, deviceId, isPaused, currentTrack, playerContext} = player;
+    const handleTogglePlay = (trackNumber:string) => {
       let findTrackNumberPosition = tracksUris.indexOf(`spotify:track:${trackNumber}`);
-      if(currentPlayerTrack!==trackNumber){
+      if(currentTrack.id!==trackNumber){
         playTracks(tracksUris, findTrackNumberPosition, deviceId);
         setPlayToggle(false);
       }else{
-        if( playerContext===''  || playerContext==='-'){
-          player.togglePlay();
+        if( playerContext.uri==='' || playerContext.uri==='-'){
+          playerInstance.togglePlay();
+          setPlayToggle(prev=>!prev);
         }
         else{
           playTracks(tracksUris, findTrackNumberPosition, deviceId);
@@ -42,9 +40,6 @@ const ArtistTopTracks = ({id, setPlayToggle, onTrackSelect, topTracks,tracksUris
         </div>
         <ul>
             {topTracks.map((track, i:number) => {
-              let url = track.album.images.length === 3
-                 ? track.album.images[2].url
-              : 'https://i.ibb.co/1JchXTW/kiwi-default.png';
               return <li key={i+track.id+id} >
                 <p className={style.playTrack}>
                   {
@@ -53,16 +48,16 @@ const ArtistTopTracks = ({id, setPlayToggle, onTrackSelect, topTracks,tracksUris
                             trackNumber={i+1}
                             onTogglePlay={handleTogglePlay}
                             contextId={''}
-                            currentPlayerTrack={currentPlayerTrack}
-                            isPlayerPaused = {isPlayerPaused}
+                            currentPlayerTrack={currentTrack}
+                            isPlayerPaused = {isPaused}
                             playerContext = {playerContext}
                             contextType = 'artist'
                            />
                   }
                 </p>
-                <img src={url}></img>
+                <img src={getTrackImage(track)}></img>
                 <p className={style.columnStyle} onClick={()=>onTrackSelect(track.id)}>{track.name}</p>
-                <p>{convertMs(track.duration_ms)}</p>
+                <p>{formatMillisecondsToTime(track.duration_ms)}</p>
               </li>;
             })}
         </ul>

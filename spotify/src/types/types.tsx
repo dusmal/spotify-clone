@@ -1,66 +1,66 @@
 export type ISpotifyPlaylist = {
-    name: string;
+  name: string;
+  id: string,
+  owner: {
     id: string,
-    owner: {
-      id: string,
-      external_urls: {
-        spotify: string;
-      };
-      display_name: string;
+    external_urls: {
+      spotify: string;
     };
-    images: ISpotifyPlaylistImages[];
-    tracks: ISpotifyPlaylistTracks;
-    description: string;
+    display_name: string;
   };
-  
+  images: ISpotifyPlaylistImages[];
+  tracks: ISpotifyPlaylistTracks;
+  description: string;
+};
+
 export type ISpotifyPlaylistImages = {
-    url: string; 
-    width: number;
-    height: number;
-  };
-  
+  url: string;
+  width: number;
+  height: number;
+};
+
 export type ISpotifyPlaylistTracks = {
-    total: number;
-    items: ISpotifyPlaylistTracksItems[];
-    next: string;
-  };
-  
+  total: number;
+  items: ISpotifyPlaylistTracksItems[];
+  next: string;
+};
+
 export type ISpotifyPlaylistTracksItems = {
-    added_at: string;
-    track: {
-      id: string;
-      name: string;
-      album: any;
-      artists: any;
-      duration_ms: number;
-    };
-    
+  added_at: string;
+  track: {
+    id: string;
+    name: string;
+    album: any;
+    artists: any;
+    duration_ms: number;
   };
 
-export type Categories =  {
+};
+
+export type Categories = {
   id: string,
-  icons: {url:string}[],
-  name:string
+  icons: { url: string }[],
+  name: string
 }[];
 
 export type Subcategories = {
-    message: string;
-    playlists: {
-        items: {
-            id: string;
-            name:string;
-            images: {url:string}[];
-        }[]
-    }
+  message: string;
+  playlists: {
+    items: {
+      id: string;
+      name: string;
+      images: { url: string }[];
+    }[]
+  }
 }
 
 export type CurrentPlayerTrack = {
   id: string;
-  name:string;
-  uri:string;
-  artists: {name:string, uri:string}[]
-  album:{
-    uri:string;
+  name: string;
+  uri: string;
+  artists: { name: string, uri: string }[]
+  album: {
+    uri: string;
   }
 }
 
@@ -76,7 +76,7 @@ export type ISpotifyTopTracks = {
 export type ISpotifySimilarArtists = {
   id: string;
   name: string;
-  images: {url:string}[];
+  images: { url: string }[];
 }[]
 
 export type ISpotifyArtist = {
@@ -88,7 +88,7 @@ export type ISpotifyArtist = {
     };
     display_name: string;
   };
-  id:string;
+  id: string;
   uri: string;
   external_urls: {
     spotify: string;
@@ -134,16 +134,16 @@ export type ISpotifyAlbum = {
   total_tracks: number;
   uri: string;
   tracks: {
-    items:{
-      id:string;
-      name:string;
-      uri:string;
+    items: {
+      id: string;
+      name: string;
+      uri: string;
       duration_ms: number;
     }[]
   }
 }
 
-export type ISpotifyTrack ={
+export type ISpotifyTrack = {
   name: string;
   album: ISpotifyAlbum;
   artists: ISpotifyArtist[];
@@ -155,3 +155,47 @@ export type ISpotifyTrack ={
 export type SpotifyProfile = {
   id: string;
 };
+
+export type Context = {
+  uri: string,
+  metadata: {
+    context_description: string
+  }
+}
+export type PlaybackTrackWindow = {
+  current_track: ISpotifyTrack;
+  previous_tracks: ISpotifyTrack[];
+  next_tracks: ISpotifyTrack[];
+}
+
+export type PlaybackState = {
+  context: Context;
+  duration: number;
+  paused: boolean;
+  position: number;
+  loading: boolean;
+  timestamp: number;
+  repeat_mode: 0 | 1 | 2;
+  shuffle: boolean;
+  track_window: PlaybackTrackWindow;
+  playback_id: string;
+  playback_quality: string;
+  playback_features: {
+    hifi_status: string;
+  };
+}
+
+export type MinimalSpotifyArtist = {
+  id: string;
+  name: string;
+};
+
+export type MinimalTrack = {
+  id: string;
+  name: string;
+  album: {
+    images: { url: string }[];
+  };
+  artists:
+  { name: string }[];
+}

@@ -10,12 +10,7 @@ function App() {
   function checkLogin() {
     const loggedinUser = localStorage.getItem('access_token');
     if (loggedinUser) {
-      if(localStorage.getItem('lastUrl')){
-        navigate(localStorage.getItem('lastUrl')!)
-      }else
-      {
       navigate('/dashboard/browseCategories');
-      }
     }
     else{
       navigate('/')

@@ -53,7 +53,11 @@ function Volume({deviceId} : Props) {
    
    return  <div className={style.volumeContainer}>
         <div className={style.volumeIcon} onClick={handleVolumeIconClick}>
-        {visibleVolume === 0 ? <FontAwesomeIcon icon={faVolumeOff}/> : ((visibleVolume < 50 )? <FontAwesomeIcon icon={faVolumeLow}/> : <FontAwesomeIcon icon={faVolumeHigh}/>  )}
+        {visibleVolume === 0 ? 
+            <FontAwesomeIcon icon={faVolumeOff}/> : 
+            ((visibleVolume < 50 )  ?
+             <FontAwesomeIcon icon={faVolumeLow}/>
+              : <FontAwesomeIcon icon={faVolumeHigh}/>  )}
         </div>
         <input
             id="volumeSlider"

@@ -2,7 +2,7 @@ import React, { useEffect, useState} from 'react';
 import style from '../../assets/styles/bottomPlayerStyle.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay,faStop,faForward,faBackward,faCirclePlus,faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import {getImageColors} from '../../helpers/colors';
+import {getImageColors} from '../../helpers/colorsUtils';
 import { checkSavedTracks, saveTrack, fetchPlaylists,fetchAllTracksFromPlaylist } from '../../api/spotifyApiClient';
 import AddToPlaylists from '../AddToPlaylists/AddToPlaylists';
 import { ISpotifyPlaylistTracksItems,ISpotifyPlaylist } from '../../types/types';
@@ -11,14 +11,9 @@ import Volume from '../Volume/Volume';
 
 type Props = {
     player: any,
-    is_active: any,
-    current_track: any,
-    is_paused: any,
-    playerState: any,
-    deviceId:string
 };
   
-function BottomPlayer({player, is_active, current_track, is_paused, playerState,deviceId} : Props) {
+function BottomPlayer({player} : Props) {
  
     const [likedSong, setLikedSong] = useState<boolean>();
     const [likeIconHovered, setLikeIconHovered] = useState<boolean>(false);
@@ -26,7 +21,8 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
     const [addToPlaylistToggle, setAddToPlaylistToggle] = useState<boolean>(true);
     const [tracksPerPlaylists, setTracksPerPlaylist] = useState<{[key:string]:any[]}>({});
     const [accentColor, setAccentColor] = useState<string>('white')
-    
+    const {playerInstance, deviceId, isPaused, isActive, currentTrack, playerContext, playerState} = player;
+
     useEffect(() => {
         fetchTracksForPlaylists();
     }, []);
@@ -38,15 +34,15 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
     }
 
     useEffect(() => {
-        if(current_track?.id){
-            getImageColors(current_track.album.images[0].url).then((color:any)=>{
+        if(currentTrack?.id){
+            getImageColors(currentTrack.album.images[0].url).then((color:any)=>{
                 setAccentColor(color)
             })
-            checkIfTrackLiked(current_track.id);
+            checkIfTrackLiked(currentTrack.id);
             setShowAddToPlaylistsComponent(false);
             setLikeIconHovered(false)
         }
-    }, [current_track?.id]);
+    }, [currentTrack?.id]);
     
     function handleOnMouseLikeIconHoveredLeave(){
         if(showAddToPlaylistsComponent){
@@ -58,8 +54,8 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
     }
 
     function handleSongLike(){
-        saveTrack(current_track.id).then((res)=>{
-            checkIfTrackLiked(current_track.id);
+        saveTrack(currentTrack.id).then((res)=>{
+            checkIfTrackLiked(currentTrack.id);
         });
     }
 
@@ -105,7 +101,7 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
         setTracksPerPlaylist(tracksPerPlaylist);
     }
 
-    if (!is_active) { 
+    if (!isActive) { 
         return (
             <>
                 <div className="container">
@@ -120,22 +116,22 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
 
                 {playerState && <div className={style.bottomPlayerContainer}>
                     <div className={style.buttonsContainer}>
-                                        <div className={style.button} onClick={() => { player.previousTrack() }} >
+                                        <div className={style.button} onClick={() => { playerInstance.previousTrack() }} >
                                             <FontAwesomeIcon icon={faBackward}/>
                                         </div>
 
-                                        <div className={style.button} style={{color: 'white'}} onClick={() => { player.togglePlay() }} >
-                                            { is_paused ? <FontAwesomeIcon icon={faPlay}/> : <FontAwesomeIcon icon={faStop}/> }
+                                        <div className={style.button} style={{color: 'white'}} onClick={() => { playerInstance.togglePlay() }} >
+                                            { isPaused ? <FontAwesomeIcon icon={faPlay}/> : <FontAwesomeIcon icon={faStop}/> }
                                         </div>
 
-                                        <div className={style.button} onClick={() => { player.nextTrack() }} >
+                                        <div className={style.button} onClick={() => { playerInstance.nextTrack() }} >
                                             <FontAwesomeIcon icon={faForward}/>
                                         </div>
                         </div>
                     <div className={style.row}>
                        <div className={style.likeSongContainer}>
                             <div className={style.trackInfo}>
-                                <p>{current_track?.name}</p>
+                                <p>{currentTrack?.name}</p>
                             </div>
 
                             <div onMouseEnter={() => setLikeIconHovered(true)} onMouseLeave={() => handleOnMouseLikeIconHoveredLeave()} className={style.likeIconContainer}>
@@ -143,7 +139,7 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
                             {likeIconHovered && (likedSong? <div id='likeWrapper' className={`${style.likeText}  ${showAddToPlaylistsComponent ? '' : style.boxStyle}`}>{showAddToPlaylistsComponent ?
                              <div>
                                 <div className={style.addToPlaylistsContainer}>
-                                    <AddToPlaylists current_track={current_track}
+                                    <AddToPlaylists current_track={currentTrack}
                                     tracksPerPlaylists={tracksPerPlaylists}
                                     handleCloseComponent={handleCloseComponent}
                                 />
@@ -153,9 +149,9 @@ function BottomPlayer({player, is_active, current_track, is_paused, playerState,
 
                         </div>
                         <TrackProgressBar
-                            player={player}
-                            current_track={current_track}
-                            is_paused={is_paused}
+                            player={playerInstance}
+                            current_track={currentTrack}
+                            is_paused={isPaused}
                             playerState={playerState}
                             accentColor={accentColor}
                         />

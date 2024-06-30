@@ -1,32 +1,50 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import style from '../../assets/styles/albumStyle.module.scss';
-import {getImageColors, invertHexColor} from '../../helpers/colors';
+import {getImageColors, invertHexColor} from '../../helpers/colorsUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay, faCircleStop, faClock } from '@fortawesome/free-solid-svg-icons';
-import { playTrack } from '../../api/spotifyApiClient';
-import { CurrentPlayerTrack, ISpotifyAlbum} from '../../types/types';
+import { getAlbum, playTrack } from '../../api/spotifyApiClient';
+import { ISpotifyAlbum} from '../../types/types';
 import TrackButton from '../TrackButton/TrackButton';
-import {convertMs} from '../../helpers/sharedFunctions';
+import {formatMillisecondsToTime} from '../../helpers/utils';
+import { useParams } from 'react-router-dom';
+import { getAlbumImage } from '../../helpers/spotifyUtils';
 
 type Props = {
-    album: ISpotifyAlbum;
     onArtistSelect: (artistId: string) => void;
     onTrackSelect: (albumId: string) => void;
     player: any;
-    currentPlayerTrack: CurrentPlayerTrack;
-    isPlayerPaused: boolean;
-    deviceId: string;
-    playerContext: string;
   };
 
-const Album = ({album, onArtistSelect, onTrackSelect,  player, currentPlayerTrack, isPlayerPaused, deviceId, playerContext}:Props) => {
+const Album = ({onArtistSelect, onTrackSelect,  player}:Props) => {
     const [albumColor, setAlbumColor] = useState<string>('');
     const [playToggle, setPlayToggle] = useState<boolean|null>(null);
+    const {playerInstance, deviceId, isPaused, isActive, currentTrack, playerContext, playerState} = player;
+    const [album, setAlbum] = useState<ISpotifyAlbum>();
+    let { id } = useParams();
+    useEffect(()=>{
+        if(!id){
+            return;
+        }
+        const fetchAlbum = async (albumId: string) => {
+            try {
+              const res = await getAlbum(albumId);
+              setAlbum(res);
+            } catch (error) {
+              console.error('Error fetching artist:', error);
+            }
+          }
+          
+          fetchAlbum(id);  
+    },[id]);
 
     useEffect(()=>{
-        if(currentPlayerTrack.album.uri===album.uri && playerContext!==''  && playerContext!=='-'){
-            isPlayerPaused ? setPlayToggle(true) : setPlayToggle(false);}
+        if(!album){
+            return;
+        }
+        if(currentTrack.album.uri===album.uri && playerContext.uri!==''  && playerContext.uri!=='-'){
+            isPaused ? setPlayToggle(true) : setPlayToggle(false);}
         else{
             setPlayToggle(true);
         }
@@ -38,14 +56,17 @@ const Album = ({album, onArtistSelect, onTrackSelect,  player, currentPlayerTrac
 
     useEffect(()=>{
         if(album){
-            if(currentPlayerTrack.album?.uri===album?.uri){
-                isPlayerPaused ? setPlayToggle(true) : setPlayToggle(false);}
+            if(currentTrack?.album?.uri===album?.uri){
+                isPaused ? setPlayToggle(true) : setPlayToggle(false);}
         }
-    }, [isPlayerPaused]);
+    }, [isPaused]);
 
     function handlePlayButton(){
-        if(currentPlayerTrack.album.uri===album.uri  && playerContext!==''  && playerContext!=='-'){
-            player.togglePlay();
+        if(!album){
+            return;
+        }
+        if(currentTrack.album.uri===album.uri  && playerContext.uri!==''  && playerContext.uri!=='-'){
+            playerInstance.togglePlay();
         }else{
             playTrack(album.uri, 0, deviceId);
         }
@@ -53,8 +74,11 @@ const Album = ({album, onArtistSelect, onTrackSelect,  player, currentPlayerTrac
     }
 
     function handlePlayTrack(offset:number, trackId: string){
-        if(trackId===currentPlayerTrack.id && playerContext!==''  && playerContext!=='-'){
-            player.togglePlay();
+        if(!album){
+            return;
+        }
+        if(trackId===currentTrack.id && playerContext.uri!==''  && playerContext.uri!=='-'){
+            playerInstance.togglePlay();
         }
         else{
             playTrack(album.uri, offset, deviceId);
@@ -63,16 +87,12 @@ const Album = ({album, onArtistSelect, onTrackSelect,  player, currentPlayerTrac
     }
 
     return (
+    <>{ album &&
       <div className={style.albumComponentContainer} style={{background:`linear-gradient(${albumColor} 0vh,#121212 90vh`}}>
         <div className={style.albumHeaderContainer}>
             <div className={style.imageWrapper}>
                 <img
-                src={
-                    album.images &&(
-                        album.images.length > 0
-                    ? album.images[0].url
-                    : 'https://i.ibb.co/1JchXTW/kiwi-default.png')
-                }
+                src={getAlbumImage(album)}
                 ></img>
             </div>
             <div className={style.infoWrapper}>
@@ -125,20 +145,21 @@ const Album = ({album, onArtistSelect, onTrackSelect,  player, currentPlayerTrac
                               trackNumber={i+1}
                               onTogglePlay={()=>handlePlayTrack(i, el.id)}
                               contextId={album.id}
-                              currentPlayerTrack={currentPlayerTrack?.id}
-                              isPlayerPaused = {isPlayerPaused}
+                              currentPlayerTrack={currentTrack}
+                              isPlayerPaused = {isPaused}
                               playerContext = {playerContext}
                               contextType='album'
                             />
                     </span>
                     <span className={style.trackName} onClick={()=>{onTrackSelect(el.id)}}>{el.name}</span>
-                    <span>{convertMs(el.duration_ms)}</span>
+                    <span>{formatMillisecondsToTime(el.duration_ms)}</span>
                 </li>
             })
         }
         </ul>
       </div>
     </div>
+    }</>
     );
 };
 

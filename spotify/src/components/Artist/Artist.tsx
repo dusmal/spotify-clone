@@ -1,37 +1,56 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import style from '../../assets/styles/artistStyle.module.scss';
-import {getImageColors, invertHexColor} from '../../helpers/colors';
+import {getImageColors, invertHexColor} from '../../helpers/colorsUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay, faCircleStop } from '@fortawesome/free-solid-svg-icons';
 import ArtistTopTracks from '../ArtistTopTracks/ArtistTopTracks';
-import { playTracks, getArtistAlbums, fetchArtistsTopTracks, getArtistRelatedArtists } from '../../api/spotifyApiClient';
-import { CurrentPlayerTrack, ISpotifyTopTracks, ISpotifySimilarArtists, ISpotifyArtist} from '../../types/types';
-import { hexToRgba } from '../../helpers/colors';
+import { playTracks, getArtistAlbums, fetchArtistsTopTracks, getArtistRelatedArtists, fetchArtist } from '../../api/spotifyApiClient';
+import { ISpotifyTopTracks, ISpotifySimilarArtists, ISpotifyArtist} from '../../types/types';
+import { hexToRgba } from '../../helpers/colorsUtils';
 import SimilarArtists from '../SimilarArtists/SimilarArtists';
 import ArtistAlbums from '../ArtistAlbums/ArtistAlbums';
+import { useParams } from 'react-router-dom';
 
 type Props = {
-    artist: ISpotifyArtist;
     onArtistSelect: (artistId: string) => void;
     onAlbumSelect: (artistId: string) => void;
     onTrackSelect: (albumId: string) => void;
     player: any;
-    currentPlayerTrack: CurrentPlayerTrack;
-    isPlayerPaused: boolean;
-    deviceId: string;
-    playerContext: string;
   };
 
-const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaused, deviceId, playerContext, onArtistSelect, onAlbumSelect}:Props) => {
+const Artist = ({onTrackSelect, player, onArtistSelect, onAlbumSelect}:Props) => {
   const [backgroundColor, setBackgroundColor] = useState<string>('');
+  const [artist, setArtist] = useState<ISpotifyArtist>();
   const [topTracks, setTopTracks] = useState<ISpotifyTopTracks[]>([]);
   const [tracksUris, setTracksUris] = useState<string[]>([]);
   const [playToggle, setPlayToggle] = useState<boolean|null>(true);
   const [similarArtists, setSimilarArtists] = useState<ISpotifySimilarArtists>([]);
   const [albums, setAlbums] = useState<ISpotifyArtist[]>([]);
+  const {playerInstance, deviceId, isPaused, isActive, currentTrack, playerContext, playerState} = player;
+  let { id } = useParams();
+
+  useEffect(() => {
+    if(!id){
+      return;
+    }
+
+    const getArtist = async (artistId: string) => {
+      try {
+        const res = await fetchArtist(artistId);
+        setArtist(res);
+      } catch (error) {
+        console.error('Error fetching artist:', error);
+      }
+    }
+    
+    getArtist(id);
+  }, [id]);
 
   useEffect(()=>{
+    if(!artist){
+      return;
+    }
     getImageColors(artist.images &&(
       artist.images.length > 0
         ? artist.images[0].url
@@ -54,17 +73,17 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
   useEffect(()=>{
     if(playerContext==='' || playerContext==='-'){
       if(tracksUris.length>0){
-        if(!tracksUris.includes(currentPlayerTrack.uri)){
-          console.log('!tracksUris.includes(currentPlayerTrack.uri) setPlayToggle(true)');
+        if(!tracksUris.includes(currentTrack.uri)){
+          console.log('!tracksUris.includes(currentTrack.uri) setPlayToggle(true)');
           setPlayToggle(true);
         }
         else{
-            if(isPlayerPaused){
-              console.log('isPlayerPaused, ', isPlayerPaused);
+            if(isPaused){
+              console.log('isPaused, ', isPaused);
               setPlayToggle(true)
             }
             else{
-              console.log('isPlayerPaused, ', isPlayerPaused);
+              console.log('isPaused, ', isPaused);
               setPlayToggle(false);
             }
         }
@@ -73,9 +92,9 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
   },[tracksUris])
 
   useEffect(()=>{
-    if(playerContext==='' || playerContext==='-'){
-      if(tracksUris.includes(currentPlayerTrack?.uri)){
-        if(!isPlayerPaused){
+    if(playerContext.uri==='' || playerContext.uri==='-'){
+      if(tracksUris.includes(currentTrack?.uri)){
+        if(!isPaused){
           setPlayToggle(false);
         }
         else{
@@ -86,25 +105,25 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
         setPlayToggle(true);
       }
    }
-  },[isPlayerPaused])
+  },[isPaused])
 
 
   function handlePlayButton(){
-    if(playerContext===''|| playerContext==='-'){
+    if(playerContext.uri===''|| playerContext.uri==='-'){
       if(!playToggle){
-        if(tracksUris.includes(currentPlayerTrack.uri)){
-          player.togglePlay();
+        if(tracksUris.includes(currentTrack.uri)){
+          playerInstance.togglePlay();
         }
         else{
           playTracks(tracksUris,0, deviceId);
         }
       }
       else{
-        if(!tracksUris.includes(currentPlayerTrack.uri)){
+        if(!tracksUris.includes(currentTrack.uri)){
           playTracks(tracksUris,0, deviceId);
         }
         else{
-          player.togglePlay();
+          playerInstance.togglePlay();
         }
       }
     }
@@ -116,23 +135,32 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
   
 
   const fetchTopTracks = async () => {
-      const nextTracks = await fetchArtistsTopTracks(artist.id);
-      setTopTracks(nextTracks.tracks);
+    if(!artist){
+      return;
+    }
+    const nextTracks = await fetchArtistsTopTracks(artist.id);
+    setTopTracks(nextTracks.tracks);
   };
 
   const fetchSimilarArtists = async () => {
-      const similarArtists = await getArtistRelatedArtists(artist.id);
-      setSimilarArtists(similarArtists);
+    if(!artist){
+      return;
+    }
+    const similarArtists = await getArtistRelatedArtists(artist.id);
+    setSimilarArtists(similarArtists);
   };
 
   const fetchArtistAlbums = async () => {
-      const albums = await getArtistAlbums(artist.id);
-      setAlbums(albums);
+    if(!artist){
+      return;
+    }
+    const albums = await getArtistAlbums(artist.id);
+    setAlbums(albums);
   };
 
     return (
-      artist && <>
-        <div className={style.artistHeaderContainer} style={ {backgroundImage:`url(${artist.images &&(artist.images.length > 0
+      <>
+        {artist && <> <div className={style.artistHeaderContainer} style={ {backgroundImage:`url(${artist.images &&(artist.images.length > 0
           ? artist.images[0].url : 'https://i.ibb.co/1JchXTW/kiwi-default.png')})`, backgroundSize:`100%`, backgroundPosition: `center`
           } }>
           <div className={style.headerContainer} >
@@ -166,10 +194,6 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
               topTracks={topTracks}
               tracksUris={tracksUris}
               player={player}
-              isPlayerPaused={isPlayerPaused}
-              currentPlayerTrack={currentPlayerTrack?.id}
-              deviceId ={deviceId}
-              playerContext={playerContext}
               setPlayToggle={setPlayToggle}
               onTrackSelect={onTrackSelect}
               ></ArtistTopTracks>
@@ -183,7 +207,7 @@ const Artist = ({artist, onTrackSelect, player, currentPlayerTrack, isPlayerPaus
             />
           </div>
         </div>
-      </>
+      </>}</>
     );
 };
 

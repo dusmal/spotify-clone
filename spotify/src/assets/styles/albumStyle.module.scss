@@ -69,6 +69,7 @@ $grey-color: #A7A7A7;
         column-gap: 20px;
         padding: 0 20px 10px;
         border-bottom: 1px solid #5A5959;
+        margin: 0em 2em;
         .headerColumnStyle{
             margin: 0;
             justify-self: start;
@@ -82,8 +83,14 @@ $grey-color: #A7A7A7;
             column-gap: 20px;
             padding: 5px 20px;
             border-radius: 10px;
-            .button{
+            margin: 0em 2em;
+            .playTrack{
                 justify-self: end;
+                    text-align: center;
+                    span{
+                        display: inline-block;
+                        width: 30px ;
+                    }
             }
             &:hover{
                 cursor: pointer;

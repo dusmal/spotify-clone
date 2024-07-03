@@ -149,10 +149,7 @@ function BottomPlayer({player} : Props) {
 
                         </div>
                         <TrackProgressBar
-                            player={playerInstance}
-                            current_track={currentTrack}
-                            is_paused={isPaused}
-                            playerState={playerState}
+                            player={player}
                             accentColor={accentColor}
                         />
                         <Volume deviceId={deviceId}/>

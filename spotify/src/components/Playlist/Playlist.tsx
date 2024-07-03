@@ -46,13 +46,7 @@ const Playlist = ({ onArtistSelect,
   }, [id]);
 
   useEffect(() => {
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    // console.log(' `spotify:playlist:${contextId}` ',  `spotify:playlist:${contextId}`);
-    // console.log('playerContext.uri ',playerContext.uri)
-    // console.log('selectedTrack ',  selectedTrack);
-    // console.log('currentTrack.id ', currentTrack.id)
     if (isContextMatching && isTrackMatching) {
-      // console.log('TOGGLE PLAY')
       playerInstance.togglePlay();
     }
   }, [toggleButtonClicked]);
@@ -62,6 +56,9 @@ const Playlist = ({ onArtistSelect,
   }, [newTracks]);
 
   useEffect(() => {
+    if(!selectedTrack || !contextId){
+      return;
+    }
     playSelectedTrack();
   }, [selectedTrack])
 
@@ -72,7 +69,6 @@ const Playlist = ({ onArtistSelect,
 
     setTracks(playlist.tracks.items);
     setNextToken(playlist.tracks.next);
-    setSelectedTrack(currentTrack.id);
     getPlaylistBackgroundColor(playlist).then(res => {
       setPlaylistColor(res);
     });

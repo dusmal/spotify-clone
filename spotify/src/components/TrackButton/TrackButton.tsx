@@ -31,13 +31,13 @@ const TrackButton = ({ trackId,
   const handleClick = () => onTogglePlay(trackId, trackNumber, contextId);
 
   const isCurrentTrack = currentPlayerTrack?.id === trackId;
-  const isInArtistContext = contextType === 'artist';
-  const isPlayingContext = playerContext.uri === `spotify:${contextType}:${contextId}`;
-  const isEmptyArtistContext = playerContext.uri === '' || playerContext.uri === '-';
-  const isPlayableContext = isPlayingContext || (isInArtistContext && isEmptyArtistContext);
+  const isArtistContextType = contextType === `artist`;
+  const isContextMatching = playerContext.uri === `spotify:${contextType}:${contextId}`;
+  const isArtistPlayerContext = playerContext.uri === '' || playerContext.uri === '-';
+  const isPlayableContext = isContextMatching || (isArtistContextType && isArtistPlayerContext);
 
   const getIcon = () => {
-    if(isCurrentTrack){
+    if( isCurrentTrack && isPlayableContext){
       return isPlayerPaused ? faPlay : faStop;
     }
     return faPlay;
@@ -46,19 +46,6 @@ const TrackButton = ({ trackId,
   const shouldShowIcon = () =>{
     return isHovered || (isPlayableContext && isCurrentTrack);
   }
-
-  // function renderPlayToggleButton() {
-  //   if (contextType === 'artist') {
-  //     return (playerContext.uri === '' || playerContext.uri === '-') ? ((currentPlayerTrack?.id === trackId ? (isPlayerPaused ? <FontAwesomeIcon icon={faPlay} /> : <FontAwesomeIcon icon={faStop} />) :
-  //       (isHovered ? <FontAwesomeIcon icon={faPlay} /> : trackNumber))) : (isHovered ? <FontAwesomeIcon icon={faPlay} /> : trackNumber);
-  //   } else {
-  //     return `spotify:${contextType}:${contextId}` === playerContext.uri ?
-  //       (currentPlayerTrack?.id === trackId ? (isPlayerPaused ? <FontAwesomeIcon icon={faPlay} /> : <FontAwesomeIcon icon={faStop} />) :
-  //         (isHovered ? <FontAwesomeIcon icon={faPlay} /> : trackNumber)) :
-  //       isHovered ? <FontAwesomeIcon icon={faPlay} /> : trackNumber;
-  //   }
-  // }
-
   return (
     <span
       key={trackId}
@@ -67,7 +54,6 @@ const TrackButton = ({ trackId,
       onClick={handleClick}
     >
       {
-        // renderPlayToggleButton()
         shouldShowIcon() ? <FontAwesomeIcon icon={getIcon()} /> : trackNumber
       }
 

@@ -5,7 +5,8 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import style from '../../assets/styles/searchStyle.module.scss';
 import { search } from '../../api/spotifyApiClient';
 import { Artist, ISpotifyPlaylist, ISpotifyAlbum, ISpotifyTrack } from '../../types/types';
-import { debounce, getAlbumImage, getArtistImage, getPlaylistImage, getTrackImage } from '../../helpers/spotifyUtils';
+import { getAlbumImage, getArtistImage, getPlaylistImage, getTrackImage } from '../../helpers/spotifyUtils';
+import { debounce } from '../../helpers/utils';
 
 type Props = {
     onArtistSelect: (artistId: string) => void;

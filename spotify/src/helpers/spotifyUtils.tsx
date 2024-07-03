@@ -53,8 +53,8 @@ export const getPlaylistImage = (playlist: ISpotifyPlaylist): string => {
   return playlistImageUrl;
 }
 
-export let debounceTimeout: number;
-export const debounce = (func: Function, delay: number) => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(func, delay);
+export const getPlayerContext = (context: string): string =>{
+  const match = context.match(/spotify:(artist|track|playlist|album):([^:]+)/);
+  const contextType = match ? match[1] : 'empty';
+  return contextType; 
 }

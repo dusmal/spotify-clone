@@ -45,14 +45,12 @@ $grey-color: #A7A7A7;
                 background-color: #2A2929;
             }
             .playTrack{
-                width: 30px;
-                height: 30px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                text-align: center;
+                padding-top: 10px;
                 span{
-                    height: 100%;
-                    width: 100%;
+                    display: inline-block;
+                    width: 30px ;
+                    height: 30px;
                 }
                 &:hover{
                     cursor: pointer;

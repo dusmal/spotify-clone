@@ -4,41 +4,37 @@ import { formatMillisecondsToTime } from '../../helpers/utils';
 
 type Props = {
     player: any,
-    current_track: any,
-    is_paused: any,
-    playerState: any,
     accentColor: string;
 };
 
 function TrackProgressBar({ player,
-                            current_track,
-                            is_paused,
-                            playerState,
                             accentColor }: Props) {
 
     const [seconds, setSeconds] = useState(0);
     const [progressBarWidth, setProgressBarWidth] = useState<number>(0);
     const progressWrapperRef = useRef<HTMLInputElement>(null);
 
+    const {playerInstance, deviceId, isPaused, isActive, currentTrack, playerContext, playerState} = player;
+
     useEffect(() => {
         let interval: ReturnType<typeof setInterval> | undefined;
-        if (!is_paused) {
+        if (!isPaused) {
             interval = setInterval(() => {
                 setSeconds(prevSeconds => prevSeconds + 1);
             }, 1000);
-        } else if (is_paused && interval) {
+        } else if (isPaused && interval) {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [is_paused]);
+    }, [isPaused]);
 
     useEffect(() => {
-        if (!current_track?.id) {
+        if (!currentTrack?.id) {
             return;
         }
         setSeconds(0);
         setProgressBarWidth(0);
-    }, [current_track?.id]);
+    }, [currentTrack?.id]);
 
     useEffect(() => {
         if (!playerState) {

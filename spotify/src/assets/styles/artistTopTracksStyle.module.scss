@@ -15,6 +15,13 @@
                 background-color: #2A2929;
             }
             .playTrack{
+                text-align: center;
+                padding-top: 10px;
+                span{
+                    display: inline-block;
+                    width: 30px ;
+                    height: 30px;
+                }
                 &:hover{
                     cursor: pointer;
                 }

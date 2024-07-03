@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay, faCircleStop } from '@fortawesome/free-solid-svg-icons';
 import { getTrack, getTrackRecommendation, playTrackWithoutContext } from '../../api/spotifyApiClient';
 import { ISpotifyTrack } from '../../types/types';
-import { formatMillisecondsToTime } from '../../helpers/utils';
+import { formatMillisecondsToTime, getPlayPauseIcon } from '../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import ListArtists from '../ListArtists/ListArtists';
 import RecommendedTracks from './RecommendedTracks/RecommendedTracks';
@@ -26,7 +26,7 @@ const Track = ({ onArtistSelect,
 
     const [track, setTrack] = useState<ISpotifyTrack>();
     const [trackColor, setTrackColor] = useState<string>('');
-    const [playToggle, setPlayToggle] = useState<boolean | null>(true);
+    const [playTrackToggle, setPlayTrackToggle] = useState<boolean>(true);
     const [recommenededTracks, setRecommendedTracks] = useState<ISpotifyTrack[]>([])
     const { playerInstance, deviceId, isPaused, currentTrack } = player;
     let { id } = useParams();
@@ -58,12 +58,6 @@ const Track = ({ onArtistSelect,
             setTrackColor(col as string);
             return col;
         })
-        if (track.uri === currentTrack.uri) {
-            isPaused ? setPlayToggle(true) : setPlayToggle(false);
-        }
-        else {
-            setPlayToggle(true);
-        }
     }, [track]);
 
     useEffect(() => {
@@ -71,27 +65,13 @@ const Track = ({ onArtistSelect,
             return;
         }
 
-        if (track.uri === currentTrack?.uri) {
-            isPaused ? setPlayToggle(true) : setPlayToggle(false);
+        if (track.uri === currentTrack.uri) {
+            setPlayTrackToggle(isPaused);
         }
         else {
-            setPlayToggle(true);
+            setPlayTrackToggle(true);
         }
-    }, [isPaused]);
-
-    useEffect(() => {
-        if (!track) {
-            return;
-        }
-        
-        if (track.uri === currentTrack?.uri) {
-            isPaused ? setPlayToggle(true) : setPlayToggle(false);
-        }
-        else {
-            setPlayToggle(true);
-        }
-
-    }, [currentTrack])
+    }, [isPaused, currentTrack, track]);
 
     function handlePlay() {
         if (!track) {
@@ -102,8 +82,7 @@ const Track = ({ onArtistSelect,
         } else {
             playTrackWithoutContext(track.id, deviceId);
         }
-        setPlayToggle(prev => !prev);
-
+        setPlayTrackToggle(prev => !prev);
     }
 
     return (
@@ -132,15 +111,10 @@ const Track = ({ onArtistSelect,
                     </div>
                 </div>
                 <div className={style.playContainer} style={{ color: `${invertHexColor(trackColor)}` }} >
-                    {playToggle ?
-                        <FontAwesomeIcon onClick={handlePlay} className={style.playIcon}
-                            icon={faCirclePlay}
-                            style={{ color: `${invertHexColor(trackColor)}` }} /> :
-                        <FontAwesomeIcon onClick={handlePlay} className={style.playIcon}
-                            icon={faCircleStop}
-                            style={{ color: `${invertHexColor(trackColor)}` }}
-                        />
-                    }
+                    <FontAwesomeIcon onClick={handlePlay} className={style.playIcon}
+                        icon={getPlayPauseIcon(playTrackToggle)}
+                        style={{ color: `${invertHexColor(trackColor)}` }}
+                    />
                 </div>
                 <RecommendedTracks recommendedTracks={recommenededTracks}
                     onArtistSelect={onArtistSelect}

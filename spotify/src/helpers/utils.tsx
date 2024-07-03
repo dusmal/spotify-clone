@@ -1,4 +1,6 @@
+import { faCirclePlay, faCircleStop } from '@fortawesome/free-solid-svg-icons';
 export let debounceTimeout: number;
+
 export const debounce = (func: Function, delay: number) => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(func, delay);
@@ -46,4 +48,8 @@ export const formatTime = (ms: number, approximation: boolean): string => {
         formattedTime = `${hours ? hours + 'hr' : ''} ${minutes}min`;
     }
     return formattedTime;
+}
+
+export const getPlayPauseIcon = (bool:boolean|null) => {
+    return bool ? faCirclePlay : faCircleStop;
 }

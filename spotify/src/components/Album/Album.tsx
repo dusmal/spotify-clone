@@ -7,7 +7,7 @@ import { faCirclePlay, faCircleStop, faClock } from '@fortawesome/free-solid-svg
 import { getAlbum, playTrack } from '../../api/spotifyApiClient';
 import { ISpotifyAlbum } from '../../types/types';
 import TrackButton from '../TrackButton/TrackButton';
-import { formatMillisecondsToTime, getPlayPauseIcon, pluralize } from '../../helpers/utils';
+import { formatMillisecondsToTime, getPlayPauseCircleIcon, pluralize } from '../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import { getAlbumImage, getPlayerContext } from '../../helpers/spotifyUtils';
 import ListArtists from '../ListArtists/ListArtists';
@@ -117,7 +117,7 @@ const Album = ({ onArtistSelect, onTrackSelect, player }: Props) => {
             </div>
             <div className={style.playContainer} style={{ color: `${invertHexColor(albumColor)}` }} >
                 <FontAwesomeIcon onClick={handleAlbumPlayButton} className={style.playIcon}
-                    icon={getPlayPauseIcon(playAlbumToggle)}
+                    icon={getPlayPauseCircleIcon(playAlbumToggle)}
                     style={{ color: `${invertHexColor(albumColor)}` }}
                 />
             </div>

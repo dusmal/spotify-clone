@@ -14,7 +14,7 @@ function TrackProgressBar({ player,
     const [progressBarWidth, setProgressBarWidth] = useState<number>(0);
     const progressWrapperRef = useRef<HTMLInputElement>(null);
 
-    const {playerInstance, deviceId, isPaused, isActive, currentTrack, playerContext, playerState} = player;
+    const { isPaused, currentTrack, playerContext, playerState, playerInstance} = player;
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval> | undefined;
@@ -34,7 +34,7 @@ function TrackProgressBar({ player,
         }
         setSeconds(0);
         setProgressBarWidth(0);
-    }, [currentTrack?.id]);
+    }, [currentTrack?.id, playerContext.uri]);
 
     useEffect(() => {
         if (!playerState) {
@@ -56,7 +56,7 @@ function TrackProgressBar({ player,
         const rect = progressWrapper.getBoundingClientRect();
         const clickX = event.clientX - rect.left;
         const clickPercentage = (clickX / rect.width) * 100;
-        player.seek((playerState.duration * clickPercentage) / 100)
+        playerInstance.seek((playerState.duration * clickPercentage) / 100)
     };
 
     return <>

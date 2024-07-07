@@ -11,7 +11,7 @@ import SimilarArtists from '../SimilarArtists/SimilarArtists';
 import ArtistAlbums from '../ArtistAlbums/ArtistAlbums';
 import { useParams } from 'react-router-dom';
 import { getArtistImage } from '../../helpers/spotifyUtils';
-import { getPlayPauseIcon } from '../../helpers/utils';
+import { getPlayPauseCircleIcon } from '../../helpers/utils';
 
 type Props = {
   onArtistSelect: (artistId: string) => void;
@@ -134,7 +134,7 @@ const Artist = ({ onTrackSelect, player, onArtistSelect, onAlbumSelect }: Props)
         <div className={style.gradientWrapper} style={{ background: `linear-gradient(${hexToRgba(backgroundColor, 0.4)} 0% ,rgba(22, 22, 22, 1) 100%` }}>
           <div onClick={handleTopTracksPlay} className={style.playContainer} style={{ color: `${invertHexColor(backgroundColor)}` }} >
             <FontAwesomeIcon className={style.playIcon}
-              icon={getPlayPauseIcon(topTracksPlayToggle)}
+              icon={getPlayPauseCircleIcon(topTracksPlayToggle)}
               style={{ color: `${invertHexColor(backgroundColor)}` }} />
           </div>
         </div>

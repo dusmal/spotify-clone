@@ -5,8 +5,8 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import style from '../../assets/styles/searchStyle.module.scss';
 import { search } from '../../api/spotifyApiClient';
 import { Artist, ISpotifyPlaylist, ISpotifyAlbum, ISpotifyTrack } from '../../types/types';
-import { getAlbumImage, getArtistImage, getPlaylistImage, getTrackImage } from '../../helpers/spotifyUtils';
 import { debounce } from '../../helpers/utils';
+import SearchResult from './SearchResult';
 
 type Props = {
     onArtistSelect: (artistId: string) => void;
@@ -26,13 +26,6 @@ const Search = ({ onArtistSelect,
     const [tracks, setTracks] = useState<ISpotifyTrack[]>([]);
     const [playlists, setPlaylists] = useState<ISpotifyPlaylist[]>([]);
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        if (value !== '') {
-            debounce(() => setSearchTerm(value), 500);
-        }
-    };
-
     useEffect(() => {
         if (searchTerm !== '') {
             console.log('search ', searchTerm);
@@ -46,10 +39,27 @@ const Search = ({ onArtistSelect,
         }
     }, [searchTerm])
 
-    useEffect(() => {
-        console.log('tracks search ', tracks);
-    }, [tracks])
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        if (value !== '') {
+            debounce(() => setSearchTerm(value), 500);
+        }
+    };
 
+    const onTypeSelect = (id: string, type: string) => {
+        if (type === 'artist') {
+            onArtistSelect(id);
+        }
+        if (type === 'playlist') {
+            onPlaylistSelect(id);
+        }
+        if (type === 'album') {
+            onAlbumSelect(id);
+        }
+        if (type === 'track') {
+            onTrackSelect(id);
+        }
+    }
 
     return (
         <div className={style.searchContainer}>
@@ -67,50 +77,10 @@ const Search = ({ onArtistSelect,
                 </span>
             </div>
             <div className={style.resultsContainer}>
-                {artists.length > 0 && <div className={style.resultTypeStyle}><h4>Artists</h4></div>}
-                {
-                    artists.length > 0 && artists.map((artist: Artist, i: number) => {
-                        return <div className={style.searchTypeContainer} onClick={() => {
-                            onArtistSelect(artist.id)
-                        }}>
-                            <img className={style.searchTypeImage} src={getArtistImage(artist)}></img>
-                            <p>{artist.name}</p>
-                        </div>
-                    })
-                }
-                {albums.length > 0 && <div className={style.resultTypeStyle}><h4>Albums</h4></div>}
-                {
-                    albums.length > 0 && albums.map((album: ISpotifyAlbum, i: number) => {
-                        return <div className={style.searchTypeContainer} onClick={() => {
-                            onAlbumSelect(album.id)
-                        }}>
-                            <img className={style.searchTypeImage} src={getAlbumImage(album)}></img>
-                            <p>{album.name}</p>
-                        </div>
-                    })
-                }
-                {tracks.length > 0 && <div className={style.resultTypeStyle}><h4>Tracks</h4></div>}
-                {
-                    tracks.length > 0 && tracks.map((track: ISpotifyTrack, i: number) => {
-                        return <div className={style.searchTypeContainer} onClick={() => {
-                            onTrackSelect(track.id)
-                        }}>
-                            <img className={style.searchTypeImage} src={getTrackImage(track)}></img>
-                            <p>{track.name}</p>
-                        </div>
-                    })
-                }
-                {playlists.length > 0 && <div className={style.resultTypeStyle}><h4>Playlists</h4></div>}
-                {
-                    playlists.length > 0 && playlists.map((playlist: ISpotifyPlaylist, i: number) => {
-                        return <div className={style.searchTypeContainer} onClick={() => {
-                            onPlaylistSelect(playlist.id)
-                        }}>
-                            <img className={style.searchTypeImage} src={getPlaylistImage(playlist)}></img>
-                            <p>{playlist.name}</p>
-                        </div>
-                    })
-                }
+                {artists.length > 0 && <SearchResult type='artist' resultArray={artists} onTypeSelect={onTypeSelect}></SearchResult>}
+                {albums.length > 0 && <SearchResult type='album' resultArray={albums} onTypeSelect={onTypeSelect}></SearchResult>}
+                {tracks.length > 0 && <SearchResult type='track' resultArray={tracks} onTypeSelect={onTypeSelect}></SearchResult>}
+                {playlists.length > 0 && <SearchResult type='playlist' resultArray={playlists} onTypeSelect={onTypeSelect}></SearchResult>}
             </div>
         </div>
     );

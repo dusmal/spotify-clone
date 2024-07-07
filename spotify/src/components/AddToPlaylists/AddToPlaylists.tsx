@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import style from '../../assets/styles/addToPlaylistsStyle.module.scss';
-import { removeSavedTrack,saveTrack, checkSavedTracks, addItemsToPlaylist, removePlaylistItems } from '../../api/spotifyApiClient';
+import { removeSavedTrack,saveTrack, addItemsToPlaylist, removePlaylistItems } from '../../api/spotifyApiClient';
+import { checkIfTrackLiked } from '../../helpers/spotifyUtils';
+import AddToPlaylistsButton from './AddToPlaylistsButton';
 
 type Props = {
     current_track: any,
@@ -12,9 +14,12 @@ function AddToPlaylists({current_track, handleCloseComponent, tracksPerPlaylists
     const [initialPlaylistsChecked, setInitialPlaylistsChecked] = useState<string[]>([]);
     const [changeToPlaylists, setChangeToPlaylists] = useState<boolean>(false);
     const [currentlyCheckedPlaylists, setCurrentlyCheckedPlaylists] = useState<string[]>([]);
-    const [check, setCheck] = useState<boolean>();
+    const [check, setCheck] = useState<boolean>(false);
     const [checkedPlaylistId, setCheckedPlaylistId] = useState<string>('');
-    const [likedSong, setLikedSong] = useState<boolean>();
+    const [likedSong, setLikedSong] = useState<boolean>(true);
+
+    const arrayOfPlaylistsToAddTrack = currentlyCheckedPlaylists.filter(el => !initialPlaylistsChecked.includes(el));
+    const arrayOfPlaylistsToRemoveTrack = initialPlaylistsChecked.filter(el=> !currentlyCheckedPlaylists.includes(el));
 
     useEffect(()=>{
         Object.keys(tracksPerPlaylists).forEach(key=>{
@@ -23,14 +28,12 @@ function AddToPlaylists({current_track, handleCloseComponent, tracksPerPlaylists
                 setCurrentlyCheckedPlaylists(prev=>[...prev,key]);
             }
         })
-        checkSavedTracks(current_track.id).then(res=>{
-            setLikedSong(res[0]);
+        checkIfTrackLiked(current_track.id).then(res=>{
+            setLikedSong(res);
         });
     },[])
     
     useEffect(()=>{
-        const arrayOfPlaylistsToAddTrack = currentlyCheckedPlaylists.filter(el => !initialPlaylistsChecked.includes(el));
-        const arrayOfPlaylistsToRemoveTrack = initialPlaylistsChecked.filter(el=> !currentlyCheckedPlaylists.includes(el))
         if(arrayOfPlaylistsToAddTrack.length > 0 || arrayOfPlaylistsToRemoveTrack.length>0 ){
             setChangeToPlaylists(true);
         }
@@ -59,53 +62,19 @@ function AddToPlaylists({current_track, handleCloseComponent, tracksPerPlaylists
     }
 
     const handleLikeSong = (isChecked:boolean)=>{
-        if(isChecked){
-            setLikedSong(true);
-        }
-        else{
-            setLikedSong(false);
-        }
+        setLikedSong(isChecked);
     }
 
     function updateTrackToPlaylists(){
-        const addResult = currentlyCheckedPlaylists.filter(el => !initialPlaylistsChecked.includes(el));
-        console.log('addResult ',addResult);
-        addResult.forEach(el=>{
+        arrayOfPlaylistsToAddTrack.forEach(el=>{
             addItemsToPlaylist(el, current_track.id);
 
         });
-        const removeResult = initialPlaylistsChecked.filter(el=> !currentlyCheckedPlaylists.includes(el));
-        console.log('remove result ', removeResult);
-        removeResult.forEach(el=>{
+        arrayOfPlaylistsToRemoveTrack.forEach(el=>{
             removePlaylistItems(el, current_track.id);
         })
-        if(likedSong){
-            saveTrack(current_track.id);
-        }
-        else{
-            removeSavedTrack(current_track.id);
-        }
-
-        if(likedSong!==undefined){
-            handleCloseComponent(true, likedSong);
-        }
-    }
-
-    function buttonsHtml(){
-        if(changeToPlaylists){
-            return <div className={style.button} onClick={()=>updateTrackToPlaylists()}>Done</div>;
-        }
-        else{
-            if(!likedSong && likedSong!==undefined){
-                return <div className={style.button} onClick={()=>updateTrackToPlaylists()}>Done</div>
-            }
-            else if(likedSong!==undefined){
-                return <div className={style.buttonCancel} onClick={()=>handleCloseComponent(false, likedSong)}>Cancel</div> ;
-            }
-            else{
-                return <div className={style.buttonCancel} onClick={()=>handleCloseComponent(false, false)}>Cancel</div> 
-            }
-        }
+        likedSong ? saveTrack(current_track.id) : removeSavedTrack(current_track.id);
+        handleCloseComponent(true, likedSong);
     }
 
     return (
@@ -138,7 +107,11 @@ function AddToPlaylists({current_track, handleCloseComponent, tracksPerPlaylists
                 </div>
                 <div> 
                     <div className={style.buttonsContainer}>
-                       {buttonsHtml()}
+                       <AddToPlaylistsButton likedSong={likedSong}
+                                             changeToPlaylists={changeToPlaylists}
+                                             updateTrackToPlaylists={updateTrackToPlaylists}
+                                             handleCloseComponent={handleCloseComponent}
+                        />
                     </div>
                 </div>
             </div>

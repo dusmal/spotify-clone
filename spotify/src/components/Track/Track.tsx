@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay, faCircleStop } from '@fortawesome/free-solid-svg-icons';
 import { getTrack, getTrackRecommendation, playTrackWithoutContext } from '../../api/spotifyApiClient';
 import { ISpotifyTrack } from '../../types/types';
-import { formatMillisecondsToTime, getPlayPauseIcon } from '../../helpers/utils';
+import { formatMillisecondsToTime, getPlayPauseCircleIcon } from '../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import ListArtists from '../ListArtists/ListArtists';
 import RecommendedTracks from './RecommendedTracks/RecommendedTracks';
@@ -112,7 +112,7 @@ const Track = ({ onArtistSelect,
                 </div>
                 <div className={style.playContainer} style={{ color: `${invertHexColor(trackColor)}` }} >
                     <FontAwesomeIcon onClick={handlePlay} className={style.playIcon}
-                        icon={getPlayPauseIcon(playTrackToggle)}
+                        icon={getPlayPauseCircleIcon(playTrackToggle)}
                         style={{ color: `${invertHexColor(trackColor)}` }}
                     />
                 </div>
